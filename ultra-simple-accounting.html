@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>极简记账系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .nav-tab {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            margin: 0 5px;
+        }
+        
+        .nav-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tab-content:not(.active) {
+            display: none;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .btn-primary {
+            background-color: #667eea;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: #f0f2ff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .income {
+            color: #4caf50;
+        }
+        
+        .expense {
+            color: #f44336;
+        }
+        
+        .balance {
+            color: #2196f3;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        th {
+            background-color: #f5f7fa;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: #fafafa;
+        }
+        
+        .text-income {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        
+        .text-expense {
+            color: #f44336;
+            font-weight: bold;
+        }
+        
+        .image-cell img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 3px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+        }
+        
+        .image-preview {
+            margin-top: 10px;
+            max-width: 200px;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
+                justify-content: flex-start;
+            }
+            
+            .nav-tab {
+                padding: 8px 12px;
+                font-size: 14px;
+                margin: 2px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .stat-card {
+                padding: 15px;
+            }
+            
+            table {
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 8px;
+            }
+            
+            .btn {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+            
+            /* 确保表格在移动端可滚动 */
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            /* 优化图片上传区域 */
+            input[type="file"] {
+                font-size: 14px;
+            }
+            
+            /* 优化金额输入框 */
+            input[type="number"] {
+                font-size: 16px;
+            }
+            
+            /* 优化导航栏 */
+            .nav-tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+        
+        /* 小屏手机优化 */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 20px;
+            }
+            
+            h2 {
+                font-size: 18px;
+            }
+            
+            .nav-tab {
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+            
+            .stat-value {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>极简记账系统</h1>
+        
+        <!-- 导航 -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="dashboard">仪表盘</button>
+            <button class="nav-tab" data-tab="add">添加交易</button>
+            <button class="nav-tab" data-tab="list">交易记录</button>
+            <button class="nav-tab" onclick="exportToExcel()">导出Excel</button>
+            <button class="nav-tab" onclick="exportToHTML()">导出HTML(WPS)</button>
+        </div>
+        
+        <!-- 仪表盘 -->
+        <div class="tab-content active" id="dashboard">
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>总收入</h3>
+                    <div class="stat-value income" id="totalIncome">¥0.00</div>
+                </div>
+                <div class="stat-card">
+                    <h3>总支出</h3>
+                    <div class="stat-value expense" id="totalExpense">¥0.00</div>
+                </div>
+                <div class="stat-card">
+                    <h3>结余</h3>
+                    <div class="stat-value balance" id="balance">¥0.00</div>
+                </div>
+                <div class="stat-card">
+                    <h3>记录数</h3>
+                    <div class="stat-value" id="recordCount">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 添加交易 -->
+        <div class="tab-content" id="add">
+            <h2>添加交易</h2>
+            <form id="transactionForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="type">交易类型</label>
+                        <select id="type">
+                            <option value="income">收入</option>
+                            <option value="expense">支出</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">金额</label>
+                        <input type="number" id="amount" step="0.01" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="category">分类</label>
+                        <select id="category">
+                            <option value="餐饮">餐饮</option>
+                            <option value="交通">交通</option>
+                            <option value="出差费">出差费</option>
+                            <option value="加油">加油</option>
+                            <option value="饭补">饭补</option>
+                            <option value="高速费">高速费</option>
+                            <option value="工资">工资</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">日期</label>
+                        <input type="date" id="date" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">描述</label>
+                    <input type="text" id="description">
+                </div>
+                
+                <div class="form-group">
+                            <label for="image">凭证照片（建议小于100KB，清晰可见金额）</label>
+                            <input type="file" id="image" accept="image/*">
+                            <div style="margin-top: 5px; color: #666; font-size: 12px;">
+                                上传说明：请直接上传本地图片文件，不支持外部链接。建议使用清晰、光线充足的图片，确保金额区域完整可见。
+                            </div>
+                            <div class="image-preview" id="imagePreview"></div>
+                        </div>
+                
+                <div style="margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary">保存</button>
+                    <button type="reset" class="btn btn-secondary">重置</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- 交易记录 -->
+        <div class="tab-content" id="list">
+            <h2>交易记录</h2>
+            <table id="transactionTable">
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>描述</th>
+                        <th>分类</th>
+                        <th>金额</th>
+                        <th>类型</th>
+                        <th>凭证</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionTableBody">
+                    <!-- 记录将动态添加 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- ExcelJS库，支持直接嵌入图片 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <!-- FileSaver.js，用于文件下载 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- Tesseract.js OCR库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
+    
+    <script>
+        // 数据存储
+        const STORAGE_KEY = 'ultra_simple_accounting';
+        
+        // 获取数据
+        function getData() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+        
+        // 保存数据
+        function saveData(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+        
+        // 初始化日期
+        document.getElementById('date').value = new Date().toISOString().split('T')[0];
+        
+        // 图片上传处理
+        let currentImage = null;
+        document.getElementById('image').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) {
+                currentImage = null;
+                document.getElementById('imagePreview').innerHTML = '';
+                return;
+            }
+            
+            // 简单的图片处理
+            if (!file.type.startsWith('image/')) {
+                alert('请上传图片文件！');
+                return;
+            }
+            
+            if (file.size > 100 * 1024) { // 限制100KB
+                alert('图片大小不能超过100KB！请使用更小的图片或截图');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentImage = e.target.result;
+                document.getElementById('imagePreview').innerHTML = `
+                    <img src="${currentImage}" alt="凭证">
+                    <div style="margin-top: 5px; color: #667eea; font-size: 12px;">正在识别金额...</div>
+                `;
+                
+                // 调用OCR识别金额
+                recognizeAmountFromImage(currentImage);
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        // OCR识别金额 - 真实OCR版
+        async function recognizeAmountFromImage(imageUrl) {
+            try {
+                console.log('开始OCR识别金额');
+                
+                // 显示识别中状态
+                document.getElementById('imagePreview').innerHTML = `
+                    <img src="${imageUrl}" alt="凭证">
+                    <div style="margin-top: 5px; color: #667eea; font-size: 12px;">正在识别金额...</div>
+                `;
+                
+                // 恢复真实OCR调用
+                console.log('使用Tesseract.js进行真实OCR识别');
+                
+                // 使用Tesseract.js识别图片，优化配置
+                const result = await Tesseract.recognize(
+                    imageUrl,
+                    'chi_sim+eng', // 中英文识别
+                    {
+                        logger: m => {
+                            console.log('OCR进度:', m.status, Math.round(m.progress * 100) + '%');
+                        },
+                        pageSegMode: 6, // 假设单一统一块文本
+                        tessedit_char_whitelist: '0123456789.¥￥元', // 只识别金额相关字符
+                        preserve_interword_spaces: 0, // 不保留单词间空格
+                        tessedit_pageseg_mode: 6, // 假设单一统一块文本
+                        tessedit_ocr_engine_mode: 3, // 使用LSTM OCR引擎
+                        tessedit_enable_dict_correction: 0 // 关闭字典校正
+                    }
+                );
+                
+                const text = result.data.text;
+                console.log('OCR识别原始结果:', text);
+                
+                // 从识别结果中提取金额
+                const amount = extractAmountFromText(text);
+                
+                // 提取所有可能的金额候选
+                const allAmounts = extractAllPossibleAmounts(text);
+                console.log('所有可能的金额候选:', allAmounts);
+                
+                // 选择最佳金额（最大金额）
+                const bestAmount = allAmounts.length > 0 ? allAmounts[0] : null;
+                
+                if (bestAmount) {
+                    // 显示金额确认弹窗
+                    showAmountConfirmation(bestAmount, allAmounts, imageUrl);
+                } else {
+                    document.getElementById('imagePreview').innerHTML = `
+                        <img src="${imageUrl}" alt="凭证">
+                        <div style="margin-top: 5px; color: #f44336; font-size: 12px;">未识别到金额，请手动输入</div>
+                        <button onclick="manualRecognize()" style="margin-top: 5px; background: #667eea; color: white; border: none; padding: 5px 10px; border-radius: 3px; font-size: 12px; cursor: pointer;">重试识别</button>
+                    `;
+                    console.log('未识别到金额');
+                }
+            } catch (error) {
+                console.error('OCR识别失败:', error);
+                document.getElementById('imagePreview').innerHTML = `
+                    <img src="${imageUrl}" alt="凭证">
+                    <div style="margin-top: 5px; color: #f44336; font-size: 12px;">OCR识别失败，请手动输入金额</div>
+                    <button onclick="manualRecognize()" style="margin-top: 5px; background: #667eea; color: white; border: none; padding: 5px 10px; border-radius: 3px; font-size: 12px; cursor: pointer;">重试识别</button>
+                `;
+            }
+        }
+        
+        // 从文本中提取金额，优化版
+        function extractAmountFromText(text) {
+            console.log('开始提取金额，原始文本:', text);
+            
+            // 清理文本，去除多余空格和换行
+            const cleanedText = text.replace(/\s+/g, '').replace(/\n/g, '');
+            console.log('清理后的文本:', cleanedText);
+            
+            // 提取所有可能的金额
+            const allAmounts = extractAllPossibleAmounts(text);
+            
+            // 返回最佳金额（最大金额）
+            return allAmounts.length > 0 ? allAmounts[0] : null;
+        }
+        
+        // 提取所有可能的金额候选
+        function extractAllPossibleAmounts(text) {
+            console.log('开始提取所有可能的金额，原始文本:', text);
+            
+            // 清理文本，去除多余空格和换行
+            const cleanedText = text.replace(/\s+/g, '').replace(/\n/g, '');
+            console.log('清理后的文本:', cleanedText);
+            
+            // 匹配所有可能的数字
+            const numberRegex = /\d+\.\d{2}|\d+/g;
+            const matches = [...cleanedText.matchAll(numberRegex)];
+            
+            if (!matches || matches.length === 0) {
+                console.log('未匹配到任何数字');
+                return [];
+            }
+            
+            console.log('匹配到的所有数字:', matches);
+            
+            // 转换为数字并去重
+            const uniqueAmounts = new Set();
+            
+            for (const match of matches) {
+                const amountStr = match[0];
+                const amount = parseFloat(amountStr);
+                
+                // 过滤无效金额
+                if (!isNaN(amount) && amount > 0 && amount < 1000000) {
+                    uniqueAmounts.add(amount.toFixed(2));
+                }
+            }
+            
+            // 转换为数组并按金额降序排序（最大的金额通常是正确的）
+            const sortedAmounts = Array.from(uniqueAmounts)
+                .map(parseFloat)
+                .sort((a, b) => b - a)
+                .map(amount => amount.toFixed(2));
+            
+            console.log('排序后的金额候选:', sortedAmounts);
+            return sortedAmounts;
+        }
+        
+        // 显示金额确认弹窗
+        function showAmountConfirmation(bestAmount, allAmounts, imageUrl) {
+            console.log('显示金额确认弹窗，最佳金额:', bestAmount, '所有候选:', allAmounts);
+            
+            // 创建弹窗HTML
+            const modalHtml = `
+                <div id="amountModal" style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 10000;
+                ">
+                    <div style="
+                        background: white;
+                        padding: 20px;
+                        border-radius: 8px;
+                        width: 400px;
+                        max-width: 90%;
+                        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                    ">
+                        <h3 style="margin-top: 0; color: #667eea;">确认金额</h3>
+                        <p>系统识别到以下金额，请选择正确的金额：</p>
+                        
+                        <div style="margin: 15px 0;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">推荐金额：</label>
+                            <input type="text" id="confirmedAmount" value="${bestAmount}" style="
+                                width: 100%;
+                                padding: 10px;
+                                border: 2px solid #667eea;
+                                border-radius: 5px;
+                                font-size: 18px;
+                                font-weight: bold;
+                                text-align: center;
+                            ">
+                        </div>
+                        
+                        <div style="margin: 15px 0;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">其他候选金额：</label>
+                            <div id="amountCandidates" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                ${allAmounts.map(amount => `
+                                    <button type="button" onclick="selectAmount('${amount}')" style="
+                                        padding: 8px 15px;
+                                        background: #f0f2ff;
+                                        border: 1px solid #667eea;
+                                        border-radius: 5px;
+                                        cursor: pointer;
+                                        font-size: 14px;
+                                    ">¥${amount}</button>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                            <button onclick="cancelAmountConfirmation()" style="
+                                padding: 10px 20px;
+                                background: #f0f0f0;
+                                border: none;
+                                border-radius: 5px;
+                                cursor: pointer;
+                            ">取消</button>
+                            <button onclick="confirmAmount('${imageUrl}')" style="
+                                padding: 10px 20px;
+                                background: #667eea;
+                                color: white;
+                                border: none;
+                                border-radius: 5px;
+                                cursor: pointer;
+                            ">确认</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 添加弹窗到文档
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+        
+        // 选择金额
+        function selectAmount(amount) {
+            document.getElementById('confirmedAmount').value = amount;
+        }
+        
+        // 取消金额确认
+        function cancelAmountConfirmation() {
+            const modal = document.getElementById('amountModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // 确认金额
+        function confirmAmount(imageUrl) {
+            const confirmedAmount = document.getElementById('confirmedAmount').value;
+            const modal = document.getElementById('amountModal');
+            
+            if (modal) {
+                modal.remove();
+            }
+            
+            // 填充确认的金额
+            document.getElementById('amount').value = confirmedAmount;
+            document.getElementById('imagePreview').innerHTML = `
+                <img src="${imageUrl}" alt="凭证">
+                <div style="margin-top: 5px; color: #4caf50; font-size: 12px;">
+                    <strong>已确认金额: ¥${confirmedAmount}</strong>
+                    <button onclick="clearRecognizedAmount()" style="margin-left: 10px; background: none; border: none; color: #667eea; font-size: 12px; cursor: pointer;">清除</button>
+                </div>
+            `;
+            
+            console.log('用户确认的金额:', confirmedAmount);
+        }
+        
+        // 清除已识别的金额
+        function clearRecognizedAmount() {
+            document.getElementById('amount').value = '';
+            const imageUrl = currentImage;
+            if (imageUrl) {
+                document.getElementById('imagePreview').innerHTML = `<img src="${imageUrl}" alt="凭证">`;
+            }
+        }
+        
+        // 手动触发识别
+        function manualRecognize() {
+            if (currentImage) {
+                recognizeAmountFromImage(currentImage);
+            }
+        }
+        
+        // 表单提交
+        document.getElementById('transactionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const transaction = {
+                id: Date.now(),
+                type: document.getElementById('type').value,
+                amount: parseFloat(document.getElementById('amount').value),
+                category: document.getElementById('category').value,
+                date: document.getElementById('date').value,
+                description: document.getElementById('description').value,
+                image: currentImage,
+                createdAt: new Date().toISOString()
+            };
+            
+            const data = getData();
+            data.push(transaction);
+            saveData(data);
+            
+            // 重置表单
+            this.reset();
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('imagePreview').innerHTML = '';
+            currentImage = null;
+            
+            // 更新视图
+            updateDashboard();
+            renderTransactions();
+            
+            alert('交易添加成功！');
+        });
+        
+        // 更新仪表盘
+        function updateDashboard() {
+            const data = getData();
+            
+            const totalIncome = data
+                .filter(t => t.type === 'income')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const totalExpense = data
+                .filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const balance = totalIncome - totalExpense;
+            
+            document.getElementById('totalIncome').textContent = `¥${totalIncome.toFixed(2)}`;
+            document.getElementById('totalExpense').textContent = `¥${totalExpense.toFixed(2)}`;
+            document.getElementById('balance').textContent = `¥${balance.toFixed(2)}`;
+            document.getElementById('recordCount').textContent = data.length;
+        }
+        
+        // 渲染交易记录
+        function renderTransactions() {
+            const data = getData();
+            const tbody = document.getElementById('transactionTableBody');
+            
+            // 按日期降序排序
+            data.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            tbody.innerHTML = '';
+            
+            data.forEach(transaction => {
+                const tr = document.createElement('tr');
+                
+                const imageHtml = transaction.image ? 
+                    `<img src="${transaction.image}" onclick="viewImage('${transaction.image}')" alt="凭证">` : 
+                    '-';
+                
+                tr.innerHTML = `
+                    <td>${transaction.date}</td>
+                    <td>${transaction.description}</td>
+                    <td>${transaction.category}</td>
+                    <td class="${transaction.type === 'income' ? 'text-income' : 'text-expense'}">
+                        ${transaction.type === 'income' ? '+' : '-'}
+                        ¥${transaction.amount.toFixed(2)}
+                    </td>
+                    <td>${transaction.type === 'income' ? '收入' : '支出'}</td>
+                    <td class="image-cell">${imageHtml}</td>
+                    <td>
+                        <button onclick="deleteTransaction(${transaction.id})" style="background: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">删除</button>
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // 删除交易
+        function deleteTransaction(id) {
+            if (confirm('确定要删除这条记录吗？')) {
+                const data = getData();
+                const newData = data.filter(t => t.id !== id);
+                saveData(newData);
+                updateDashboard();
+                renderTransactions();
+            }
+        }
+        
+        // 查看图片
+        function viewImage(imageUrl) {
+            const win = window.open('', '_blank', 'width=600,height=400');
+            win.document.write(`
+                <html>
+                <head><title>凭证照片</title></head>
+                <body style="margin: 0; padding: 20px; background: #f5f7fa;">
+                    <img src="${imageUrl}" style="max-width: 100%; max-height: 90%; display: block; margin: 0 auto;">
+                    <button onclick="window.close()" style="display: block; margin: 20px auto; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">关闭</button>
+                </body>
+                </html>
+            `);
+            win.document.close();
+        }
+        
+        // 导出Excel（支持直接嵌入图片）
+        async function exportToExcel() {
+            const data = getData();
+            
+            // 创建工作簿
+            const workbook = new ExcelJS.Workbook();
+            workbook.creator = '极简记账系统';
+            workbook.lastModifiedBy = 'User';
+            workbook.created = new Date();
+            workbook.modified = new Date();
+            workbook.lastPrinted = new Date();
+            
+            // 创建工作表
+            const worksheet = workbook.addWorksheet('交易记录');
+            
+            // 设置列宽
+            worksheet.columns = [
+                { header: '日期', key: 'date', width: 15 },
+                { header: '描述', key: 'description', width: 25 },
+                { header: '分类', key: 'category', width: 12 },
+                { header: '金额', key: 'amount', width: 12 },
+                { header: '类型', key: 'type', width: 10 },
+                { header: '凭证照片', key: 'image', width: 20 }
+            ];
+            
+            // 设置表头样式
+            worksheet.getRow(1).font = { bold: true };
+            worksheet.getRow(1).fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'F0F2FF' }
+            };
+            
+            // 添加数据行
+            for (let i = 0; i < data.length; i++) {
+                const transaction = data[i];
+                const row = i + 2; // +2 因为有表头
+                
+                // 设置行高，为图片预留空间
+                worksheet.getRow(row).height = 80;
+                
+                // 添加数据
+                worksheet.getCell(`A${row}`).value = transaction.date;
+                worksheet.getCell(`B${row}`).value = transaction.description;
+                worksheet.getCell(`C${row}`).value = transaction.category;
+                worksheet.getCell(`D${row}`).value = transaction.amount;
+                worksheet.getCell(`D${row}`).numFmt = '¥#,##0.00';
+                worksheet.getCell(`D${row}`).font = {
+                    color: { argb: transaction.type === 'income' ? '4CAF50' : 'F44336' },
+                    bold: true
+                };
+                worksheet.getCell(`E${row}`).value = transaction.type === 'income' ? '收入' : '支出';
+                
+                // 嵌入图片
+                if (transaction.image) {
+                    try {
+                        // 从Base64转换为Blob
+                        const blob = base64ToBlob(transaction.image);
+                        
+                        // 添加图片到工作簿
+                        const imageId = workbook.addImage({
+                            buffer: blob,
+                            extension: 'jpeg',
+                        });
+                        
+                        // 计算图片位置和大小
+                        const col = 6; // 第6列（F列）
+                        const startCol = String.fromCharCode(64 + col); // 转换为列字母
+                        const endCol = String.fromCharCode(64 + col);
+                        
+                        // 插入图片
+                        worksheet.addImage(imageId, {
+                            tl: { col: col - 1, row: row - 1 }, // ExcelJS使用0-based索引
+                            ext: { width: 100, height: 60 },
+                            editAs: 'oneCell'
+                        });
+                        
+                        console.log('图片嵌入成功，行:', row, '列:', col);
+                    } catch (error) {
+                        console.error('图片嵌入失败:', error);
+                        worksheet.getCell(`F${row}`).value = '图片嵌入失败';
+                    }
+                } else {
+                    worksheet.getCell(`F${row}`).value = '';
+                }
+            }
+            
+            // 生成Excel文件
+            const buffer = await workbook.xlsx.writeBuffer();
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            
+            // 下载文件
+            const fileName = `记账记录_${new Date().toISOString().split('T')[0]}.xlsx`;
+            saveAs(blob, fileName);
+            
+            alert('Excel导出成功！\n\n说明：\n1. 凭证图片已直接嵌入到Excel文件中\n2. 可以直接用WPS Office或Microsoft Excel打开\n3. 图片位于"凭证照片"列\n4. 建议使用WPS Office 2019或更高版本查看');
+        }
+        
+        // Base64转Blob
+        function base64ToBlob(base64) {
+            const parts = base64.split(';base64,');
+            const contentType = parts[0].split(':')[1];
+            const raw = window.atob(parts[1]);
+            const rawLength = raw.length;
+            const uInt8Array = new Uint8Array(rawLength);
+            
+            for (let i = 0; i < rawLength; ++i) {
+                uInt8Array[i] = raw.charCodeAt(i);
+            }
+            
+            return new Blob([uInt8Array], { type: contentType });
+        }
+        
+        // 标签切换
+        document.querySelectorAll('.nav-tab[data-tab]').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 更新标签状态
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 显示对应内容
+                const tabName = this.dataset.tab;
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(tabName).classList.add('active');
+            });
+        });
+        
+        // 导出为HTML（适合WPS Office）
+        window.exportToHTML = function() {
+            const data = getData();
+            
+            // 生成HTML内容
+            let html = `
+                <!DOCTYPE html>
+                <html lang="zh-CN">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>记账记录</title>
+                    <style>
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            font-family: Arial, sans-serif;
+                        }
+                        th, td {
+                            padding: 12px;
+                            text-align: left;
+                            border: 1px solid #ddd;
+                        }
+                        th {
+                            background-color: #f5f7fa;
+                            font-weight: bold;
+                        }
+                        tr:hover {
+                            background-color: #fafafa;
+                        }
+                        .text-income {
+                            color: #4caf50;
+                            font-weight: bold;
+                        }
+                        .text-expense {
+                            color: #f44336;
+                            font-weight: bold;
+                        }
+                        .transaction-image {
+                            width: 100px;
+                            height: 60px;
+                            object-fit: contain;
+                            border: 1px solid #ddd;
+                            border-radius: 3px;
+                            display: block;
+                            margin: 0 auto;
+                            max-width: 100%;
+                            max-height: 100%;
+                        }
+                        
+                        /* 确保表格单元格正确处理图片 */
+                        td {
+                            vertical-align: middle;
+                            text-align: center;
+                        }
+                        
+                        /* 为图片单元格设置固定宽度和高度 */
+                        td:nth-child(6) {
+                            width: 120px;
+                            height: 80px;
+                            overflow: hidden;
+                            vertical-align: middle;
+                            text-align: center;
+                        }
+                        
+                        /* 确保表格在转换时保持结构 */
+                        table {
+                            table-layout: fixed;
+                            border-collapse: collapse;
+                        }
+                        
+                        /* 为不同列设置固定宽度 */
+                        th:nth-child(1), td:nth-child(1) { width: 120px; }
+                        th:nth-child(2), td:nth-child(2) { width: 200px; }
+                        th:nth-child(3), td:nth-child(3) { width: 100px; }
+                        th:nth-child(4), td:nth-child(4) { width: 100px; }
+                        th:nth-child(5), td:nth-child(5) { width: 80px; }
+                        th:nth-child(6), td:nth-child(6) { width: 120px; }
+                        h1 {
+                            text-align: center;
+                            color: #667eea;
+                        }
+                        .export-info {
+                            text-align: center;
+                            color: #666;
+                            margin-bottom: 20px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>记账记录</h1>
+                    <div class="export-info">
+                        导出时间：${new Date().toLocaleString()}
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>描述</th>
+                                <th>分类</th>
+                                <th>金额</th>
+                                <th>类型</th>
+                                <th>凭证照片</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            // 添加数据行
+            data.forEach(t => {
+                const imageHtml = t.image ? 
+                    `<img src="${t.image}" class="transaction-image" alt="凭证">` : 
+                    '';
+                
+                html += `
+                            <tr>
+                                <td>${t.date}</td>
+                                <td>${t.description}</td>
+                                <td>${t.category}</td>
+                                <td class="${t.type === 'income' ? 'text-income' : 'text-expense'}">
+                                    ${t.type === 'income' ? '+' : '-'}
+                                    ¥${t.amount.toFixed(2)}
+                                </td>
+                                <td>${t.type === 'income' ? '收入' : '支出'}</td>
+                                <td>${imageHtml}</td>
+                            </tr>
+                `;
+            });
+            
+            // 结束HTML
+            html += `
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `;
+            
+            // 导出HTML文件
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `记账记录_${new Date().toISOString().split('T')[0]}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('HTML文件导出成功！\n\nWPS使用说明：\n1. 用WPS Office打开此HTML文件\n2. 点击"文件" -> "另存为"\n3. 选择保存类型为"Excel文件(*.xlsx)"\n4. 保存后即可在WPS中查看包含图片的Excel文件');
+        }
+        
+        // 初始化
+        updateDashboard();
+        renderTransactions();
+    </script>
+</body>
+</html>
